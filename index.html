@@ -1,0 +1,778 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b13">
+
+<title>Anks Dharam | Epic Hindu Mythology Cinematic Films</title>
+<link rel="icon" type="image/png" href="Om Logo.png">
+
+<meta name="description" content="Anks Dharam presents epic AI cinematic films inspired by Hindu mythology, Vedic scriptures, divine avatars and timeless spiritual stories.">
+
+<style>
+:root {
+  --bg: #080b13;
+  --panel: #121a28;
+  --gold: #f4c775;
+  --text: #f8f3e9;
+  --muted: #c9c3b9;
+  --border: rgba(244,199,117,.28);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 75px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+a:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+/* HORIZONTAL TOP BANNER — 20% SCREEN HEIGHT */
+
+.banner {
+  position: relative;
+  height: 20vh;
+  min-height: 125px;
+  max-height: 240px;
+  overflow: hidden;
+}
+
+.banner-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0,0,0,.80),
+    rgba(0,0,0,.05)
+  );
+}
+
+.brand {
+  position: absolute;
+  z-index: 2;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand img {
+  width: clamp(60px, 8vw, 100px);
+  height: clamp(60px, 8vw, 100px);
+  object-fit: contain;
+}
+
+.brand h1 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: clamp(27px, 4vw, 55px);
+  letter-spacing: 3px;
+  color: #ffe0a0;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: clamp(10px, 1vw, 14px);
+  letter-spacing: 1px;
+}
+
+/* WORKING NAVIGATION */
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(5,8,14,.97);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-links {
+  max-width: 1250px;
+  margin: auto;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover { color: var(--gold); }
+
+main {
+  max-width: 1250px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+/* FEATURED SHANI DEV FILM */
+
+.feature {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 30px;
+  align-items: center;
+  padding: 30px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.feature-poster {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.eyebrow {
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+.feature h2 {
+  color: var(--gold);
+  font-family: Georgia, serif;
+  font-size: clamp(30px, 4vw, 54px);
+  margin: 10px 0;
+  line-height: 1.15;
+}
+
+.feature h2 span {
+  display: block;
+  font-size: .52em;
+  margin-top: 10px;
+}
+
+.feature p {
+  color: var(--muted);
+}
+
+.festival {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(244,199,117,.05);
+}
+
+.festival img {
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.festival strong {
+  color: var(--gold);
+  display: block;
+}
+
+.festival small {
+  color: var(--muted);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  min-height: 44px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid #b78b4c;
+  transition: transform .2s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.gold-btn {
+  background: linear-gradient(110deg,#ffe2a0,#d6a04e);
+  color: #161008;
+}
+
+.dark-btn {
+  background: #1b2330;
+  color: var(--gold);
+}
+
+/* CONTENT SECTIONS */
+
+section.content {
+  padding: 34px 0 10px;
+}
+
+.section-title {
+  font-family: Georgia, serif;
+  color: var(--gold);
+  font-size: clamp(25px,3vw,35px);
+  margin: 0 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 18px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card h3 {
+  color: var(--gold);
+  font-family: Georgia, serif;
+  font-size: 21px;
+  margin: 0 0 9px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  flex: 1;
+}
+
+.card .btn {
+  align-self: flex-start;
+}
+
+.upcoming-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 18px;
+}
+
+.upcoming-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 22px;
+  border-radius: 12px;
+}
+
+.upcoming-card h3 {
+  color: var(--gold);
+  margin: 5px 0;
+}
+
+.coming-soon {
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.about-text {
+  max-width: 850px;
+  color: var(--muted);
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.social-links a {
+  padding: 13px 18px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.social-links a:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: 45px;
+  padding: 25px;
+  font-size: 12px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media(max-width:750px) {
+
+  .brand {
+    left: 12px;
+    gap: 8px;
+  }
+
+  .brand img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .brand h1 {
+    font-size: 25px;
+    letter-spacing: 1px;
+  }
+
+  .brand p {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .nav-links {
+    gap: 10px 16px;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+  }
+
+  .feature {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .cards,
+  .upcoming-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .festival img {
+    width: 75px;
+    height: 75px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+
+<body id="home">
+
+<header class="banner">
+
+  <img
+    class="banner-bg"
+    src="AI Film Banner.png"
+    alt="Anks Dharam Epic Hindu Mythology Films"
+  >
+
+  <div class="brand">
+    <img src="Om Logo.png" alt="Anks Dharam Om Logo">
+
+    <div>
+      <h1>ANKS DHARAM</h1>
+      <p>ANCIENT STORIES | DIVINE WISDOM | AI CINEMA</p>
+    </div>
+  </div>
+
+</header>
+
+<nav aria-label="Main navigation">
+  <div class="nav-links">
+    <a href="#home">Home</a>
+    <a href="#films">Films</a>
+    <a href="#playlists">Playlists</a>
+    <a href="#upcoming">Upcoming</a>
+    <a href="#about">About</a>
+    <a href="#connect">Connect</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- FEATURED FILM -->
+
+<section class="feature">
+
+  <div>
+    <img
+      class="feature-poster"
+      src="ShaniDev Part1.png"
+      alt="Shani Dev Part 1 Childhood Story"
+    >
+  </div>
+
+  <div>
+
+    <div class="eyebrow">FEATURED FILM</div>
+
+    <h2>
+      SHANI DEV
+      <span>Part 1: Childhood Story</span>
+    </h2>
+
+    <p>
+      A Child. A Destiny. A Legend Begins.
+    </p>
+
+    <p>
+      Experience the childhood story of
+      Shani Dev, exploring the divine principles of
+      Karma, Justice, Discipline and Destiny through
+      epic AI cinematic animation.
+    </p>
+
+    <div class="festival">
+
+      <img
+        src="001_NeuWave_badge_transparentpng.png"
+        alt="Neu Wave AI Film Festival Official Selection"
+      >
+
+      <div>
+        <strong>
+          Official Selection at Neu Wave AI Film Festival
+        </strong>
+        <small>Hollywood, Los Angeles</small>
+      </div>
+
+    </div>
+
+    <a
+      class="btn gold-btn"
+      href="https://youtu.be/3MHOr1g1N9M"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      ▶ WATCH NOW ON YOUTUBE
+    </a>
+
+  </div>
+
+</section>
+
+<!-- THREE FEATURED FILMS -->
+
+<section class="content" id="films">
+
+  <h2 class="section-title">Explore Our Cinematic Films</h2>
+
+  <div class="cards">
+
+    <article class="card">
+
+      <img
+        src="https://img.youtube.com/vi/3MHOr1g1N9M/hqdefault.jpg"
+        alt="Shani Dev Childhood Story"
+        loading="lazy"
+      >
+
+      <div class="card-body">
+        <h3>Shani Dev — Childhood Story</h3>
+        <p>
+          Part 1. Official Selection at
+          Neu Wave AI Film Festival.
+        </p>
+
+        <a class="btn dark-btn"
+           href="https://youtu.be/3MHOr1g1N9M"
+           target="_blank"
+           rel="noopener noreferrer">
+          ▶ Watch Film
+        </a>
+      </div>
+
+    </article>
+
+    <article class="card">
+
+      <img
+        src="https://img.youtube.com/vi/CBCfQmdMVuM/hqdefault.jpg"
+        alt="Narasimha Avatar"
+        loading="lazy"
+      >
+
+      <div class="card-body">
+        <h3>Narasimha Avatar</h3>
+        <p>
+          Experience the divine incarnation
+          of Lord Vishnu in an epic mythology film.
+        </p>
+
+        <a class="btn dark-btn"
+           href="https://youtu.be/CBCfQmdMVuM"
+           target="_blank"
+           rel="noopener noreferrer">
+          ▶ Watch Film
+        </a>
+      </div>
+
+    </article>
+
+    <article class="card">
+
+      <img
+        src="https://img.youtube.com/vi/dhhGwQdxKro/hqdefault.jpg"
+        alt="Why Shiv Is Called Neelkanth"
+        loading="lazy"
+      >
+
+      <div class="card-body">
+        <h3>Why Shiv Is Called Neelkanth?</h3>
+        <p>
+          Discover the legendary story of
+          Samudra Manthan and Lord Shiva.
+        </p>
+
+        <a class="btn dark-btn"
+           href="https://youtu.be/dhhGwQdxKro"
+           target="_blank"
+           rel="noopener noreferrer">
+          ▶ Watch Film
+        </a>
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
+
+<!-- YOUTUBE PLAYLISTS -->
+
+<section class="content" id="playlists">
+
+  <h2 class="section-title">Our YouTube Collections</h2>
+
+  <div class="cards">
+
+    <article class="card">
+      <div class="card-body">
+
+        <h3>Epic Cinematic Films</h3>
+
+        <p>
+          AI-animated Hindu mythology films,
+          Divine Avatars and Vedic stories.
+        </p>
+
+        <a
+          class="btn dark-btn"
+          href="https://www.youtube.com/playlist?list=PLdp9v6qShEfRlIBnxkKVTtvn9jkUoOIQV"
+          target="_blank"
+          rel="noopener noreferrer">
+          Explore Films ↗
+        </a>
+
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-body">
+
+        <h3>Shani Dev Series</h3>
+
+        <p>
+          Explore the extraordinary
+          cinematic stories of Shani Dev.
+        </p>
+
+        <a
+          class="btn dark-btn"
+          href="https://www.youtube.com/show/VLPLHu1F6E7t2fg?sbp=QAE%3D"
+          target="_blank"
+          rel="noopener noreferrer">
+          Explore Series ↗
+        </a>
+
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-body">
+
+        <h3>Bhakti Geet</h3>
+
+        <p>
+          Devotional songs, Sacred mantras,
+          Spiritual chants and Bhajans.
+        </p>
+
+        <a
+          class="btn dark-btn"
+          href="https://www.youtube.com/playlist?list=PLdp9v6qShEfS93Chcvyq9YAfR9qpLFYGs"
+          target="_blank"
+          rel="noopener noreferrer">
+          Listen Now ↗
+        </a>
+
+      </div>
+    </article>
+
+  </div>
+
+</section>
+
+<!-- UPCOMING RELEASES -->
+
+<section class="content" id="upcoming">
+
+  <h2 class="section-title">Upcoming Cinematic Releases</h2>
+
+  <div class="upcoming-grid">
+
+    <article class="upcoming-card">
+
+      <span class="coming-soon">COMING SOON</span>
+
+      <h3>Shani Dev — Part 2</h3>
+
+      <p>Marriage of Shani Dev</p>
+
+    </article>
+
+    <article class="upcoming-card">
+
+      <span class="coming-soon">COMING SOON</span>
+
+      <h3>Shani Dev — Part 3</h3>
+
+      <p>Shani Dev vs Yamraj</p>
+
+    </article>
+
+  </div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section class="content" id="about">
+
+  <h2 class="section-title">About Anks Dharam</h2>
+
+  <p class="about-text">
+    Anks Dharam brings timeless stories from
+    Hindu Mythology, Vedic Scriptures and
+    ancient Indian spiritual traditions to life
+    through original AI-assisted cinematic films,
+    devotional music and immersive storytelling.
+  </p>
+
+  <p class="about-text">
+    Created and produced by Ankur Sharda,
+    the channel combines mythology, animation,
+    cinematic visuals and spiritual knowledge
+    for audiences around the world.
+  </p>
+
+</section>
+
+<!-- SOCIAL MEDIA -->
+
+<section class="content" id="connect">
+
+  <h2 class="section-title">Stay Connected</h2>
+
+  <p class="about-text">
+    Follow us for new film releases,
+    devotional content and upcoming announcements.
+  </p>
+
+  <div class="social-links">
+
+    <a
+      href="https://www.youtube.com/@AnksDharam"
+      target="_blank"
+      rel="noopener noreferrer">
+      ▶ YouTube
+    </a>
+
+    <a
+      href="https://www.instagram.com/anks_lifeon/"
+      target="_blank"
+      rel="noopener noreferrer">
+      ◎ Instagram
+    </a>
+
+    <a
+      href="https://www.facebook.com/ankur.sharda"
+      target="_blank"
+      rel="noopener noreferrer">
+      f Facebook
+    </a>
+
+    <a
+      href="https://x.com/ankursharda13"
+      target="_blank"
+      rel="noopener noreferrer">
+      𝕏 X
+    </a>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  © <span id="year">2026</span> Anks Dharam |
+  Epic AI Cinematic Hindu Mythology Films
+</footer>
+
+<script>
+document.getElementById("year").textContent =
+  new Date().getFullYear();
+</script>
+
+</body>
+</html>

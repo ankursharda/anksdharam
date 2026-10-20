@@ -51,7 +51,7 @@ for handle in HANDLES:
             title_l = title.casefold()
             desc_l = desc.casefold()
             points = sum(weight for word, weight in CORE_KEYWORDS if word in title_l)
-            points += sum(max(1, weight // 4) for word, weight in keywords if word in desc_l and word not in title_l)
+            points += sum(max(1, weight // 4) for word, weight in CORE_KEYWORDS if word in desc_l and word not in title_l)
             if points:
                 score += points
                 matches.append({"title": title, "video_id": v["id"], "views": int(v.get("statistics", {}).get("viewCount", 0)), "relevance_points": points})

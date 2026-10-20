@@ -1,0 +1,32 @@
+name: Anks Dharam Whole-Channel Growth Intelligence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 4 * * *' # Daily 09:45 IST
+permissions:
+  contents: read
+concurrency:
+  group: anks-channel-intelligence
+  cancel-in-progress: false
+jobs:
+  discover-and-rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Catalog entire public YouTube library and rank opportunities
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python growth-agents/channel_growth_engine.py
+      - name: Save full library and growth opportunities
+        uses: actions/upload-artifact@v4
+        with:
+          name: whole-channel-growth-intelligence
+          path: |
+            growth-agents/channel-catalog.json
+            growth-agents/output/channel-growth-report.md
+            growth-agents/output/channel-growth-opportunities.json
+          retention-days: 30

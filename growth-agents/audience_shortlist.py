@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rank the user's 13 competitor channels for Shani Dev audience research.
+"""Rank 13 competitor channels for reusable Anks Dharam mythology audience research.
 
 This is an editorial relevance heuristic, NOT a prediction of clicks or a verified
 Google Ads placement eligibility check.
@@ -25,12 +25,11 @@ def api(endpoint, **params):
     with urllib.request.urlopen(url, timeout=30) as resp:
         return json.load(resp)
 
-keywords = [
-    ("shani dev", 12), ("shanidev", 12), ("shani", 8), ("शनिदेव", 12),
-    ("surya dev", 10), ("suryadev", 10), ("सूर्य देव", 10),
-    ("hindu mythology", 5), ("mythology", 3), ("puran", 4),
-    ("animated", 4), ("animation", 4), ("ai film", 4),
-    ("vedic", 3), ("sanatan", 3), ("कथा", 2),
+CORE_KEYWORDS = [
+    ("hindu mythology", 10), ("mythology", 5), ("puran", 7),
+    ("animated", 6), ("animation", 6), ("ai film", 7),
+    ("vedic", 6), ("sanatan", 5), ("कथा", 4),
+    ("devotional", 4), ("bhakti", 4), ("avatar", 6), ("अवतार", 6),
 ]
 rows = []
 for handle in HANDLES:
@@ -51,7 +50,7 @@ for handle in HANDLES:
             desc = v["snippet"].get("description", "")[:350]
             title_l = title.casefold()
             desc_l = desc.casefold()
-            points = sum(weight for word, weight in keywords if word in title_l)
+            points = sum(weight for word, weight in CORE_KEYWORDS if word in title_l)
             points += sum(max(1, weight // 4) for word, weight in keywords if word in desc_l and word not in title_l)
             if points:
                 score += points
@@ -70,13 +69,13 @@ ranked = sorted([x for x in rows if x["status"] == "OK"],
 out = Path("growth-agents/output")
 out.mkdir(parents=True, exist_ok=True)
 now = dt.datetime.now(dt.timezone.utc).isoformat()
-payload = {"generated_at_utc": now, "method": "Keyword-weighted relevance across 30 latest uploads per channel",
+payload = {"generated_at_utc": now, "method": "Channel-wide mythology, devotional and animation keyword relevance across 30 latest uploads per channel",
            "caveats": "Heuristic only; not audience overlap, actual click probability, lifetime ranking, or Google Ads eligibility.",
            "ranked_channels": ranked, "unresolved": [x for x in rows if x["status"] != "OK"]}
-(out / "shani-audience-shortlist.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-lines = ["# Shani Dev audience research shortlist", "", f"Generated: {now}",
+(out / "channel-audience-shortlist.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+lines = ["# Anks Dharam channel-wide audience research shortlist", "", f"Generated: {now}",
          "Ranked by keyword relevance in up to 30 recent public videos per channel.",
-         "**Scores are not predicted click-through rates or verified Google Ads placements.**", "",
+         "**Core audience scores are not predicted click-through rates or verified Google Ads placements.**", "",
          "## Top five candidates", ""]
 for idx, row in enumerate(ranked[:5], 1):
     lines.extend([f"### {idx}. {row['title']} (@{row['handle']})",
@@ -90,9 +89,9 @@ for i, row in enumerate(ranked, 1):
     lines.append(f"{i}. @{row['handle']} — score {row['score']} — {row['matched_video_count']} matching uploads")
 for row in payload["unresolved"]:
     lines.append(f"- @{row['handle']}: {row['status']} (manual review required)")
-lines.extend(["", "## Next steps", "",
+lines.extend(["", "## Video-specific opportunities", "", "For Shani Dev, Narasimha, Shiva, Parashuram, Kalki and future releases, review matching story-specific videos within the core-ranked channels. Do not overwrite the reusable core audience ranking.", "", "## Next steps", "",
               "Review the top channels' matching videos manually, then check Google Ads placement availability.",
               "Start with a small approved budget and monitor actual engaged views, watch time, and subscribers.",
               "No advertising campaign has been created or launched by this agent."])
-(out / "shani-audience-shortlist.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+(out / "channel-audience-shortlist.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 print(f"Audience shortlist generated: {len(ranked)} channels ranked; top handles: {', '.join('@'+r['handle'] for r in ranked[:5])}")

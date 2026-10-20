@@ -4,9 +4,9 @@ on:
   schedule:
     - cron: '15 4 * * *' # Daily 09:45 IST
 permissions:
-  contents: read
+  contents: write
 concurrency:
-  group: anks-channel-intelligence
+  group: anks-upload-growth-pipeline
   cancel-in-progress: false
 jobs:
   discover-and-rank:
@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -21,7 +23,26 @@ jobs:
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python growth-agents/channel_growth_engine.py
+      - name: Select one unpromoted public video and publish to Instagram
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          python growth-agents/rotate_instagram_promotions.py
+      - name: Persist confirmed Instagram promotions
+        if: always()
+        run: |
+          git config user.name "Anks Dharam Growth Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f growth-agents/instagram-published.json ]; then
+            git add growth-agents/instagram-published.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Track automated Instagram library promotions [skip ci]"
+              git pull --rebase origin main
+              git push
+            fi
+          fi
       - name: Save full library and growth opportunities
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: whole-channel-growth-intelligence

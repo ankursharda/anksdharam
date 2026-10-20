@@ -1,0 +1,26 @@
+name: Growth Agent - Competitor Intelligence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1' # Monday 09:30 IST
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Research 13 competitor channels
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 growth-agents/competitor_intelligence.py
+      - name: Upload competitor reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: competitor-intelligence
+          path: |
+            growth-agents/output/competitor-intelligence.md
+            growth-agents/output/competitor-intelligence.json
+          retention-days: 90

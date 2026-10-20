@@ -1,4 +1,4 @@
-name: Growth Agent - Channel Audience Shortlist
+name: Audience Agent
 on:
   workflow_dispatch:
   schedule:

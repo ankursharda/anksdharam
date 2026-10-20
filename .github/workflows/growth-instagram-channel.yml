@@ -1,0 +1,40 @@
+name: Anks Dharam Channel-Wide Instagram Preview
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 5 * * *' # Daily 11:00 IST
+permissions:
+  contents: read
+jobs:
+  channel-wide-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Discover all new Anks Dharam uploads
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python growth-agents/upload_monitor.py
+      - name: Prepare Instagram preview for each new film
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          queue = json.loads(Path("growth-agents/output/instagram-new-uploads.json").read_text())
+          for item in queue:
+              subprocess.run(["python", "growth-agents/instagram_thumbnail_post.py",
+                              "--video-id", item["video_id"], "--title", item["title"]], check=True)
+          print(f"Prepared {len(queue)} Instagram previews. No public posts.")
+          PY
+      - name: Save channel-wide promotion previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: channel-wide-instagram-previews
+          path: |
+            growth-agents/output/weekly-upload-promotion.md
+            growth-agents/output/instagram-new-uploads.json
+          retention-days: 30

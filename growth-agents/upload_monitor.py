@@ -12,6 +12,7 @@ from urllib.request import urlopen
 ROOT = Path("growth-agents")
 STATE = ROOT / "upload-monitor-state.json"
 OUT = ROOT / "output" / "weekly-upload-promotion.md"
+QUEUE = ROOT / "output" / "instagram-new-uploads.json"
 CHANNEL = "UCIFarx_Xs-20fTL26nseYmQ"
 
 def youtube(endpoint, **params):
@@ -75,6 +76,7 @@ def main():
     else:
         content = "# Anks Dharam upload monitor\n\nNo new public uploads since the previous scan.\n"
     OUT.write_text(content, encoding="utf-8")
+    QUEUE.write_text(json.dumps([{"video_id": v["snippet"]["resourceId"]["videoId"], "title": v["snippet"]["title"].strip()} for v in fresh], indent=2, ensure_ascii=False)+"\n", encoding="utf-8")
     latest = [v["snippet"]["resourceId"]["videoId"] for v in videos]
     STATE.write_text(json.dumps({"seen":list(dict.fromkeys(latest + previous.get("seen", [])))[:250], "checked_at_utc":dt.datetime.now(dt.timezone.utc).isoformat()}, indent=2)+"\n")
     print(f"Scanned {len(videos)} recent uploads; found {len(fresh)} new uploads; promotional draft: {OUT}")

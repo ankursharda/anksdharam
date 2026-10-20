@@ -45,7 +45,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", default="growth-agents/engagement-queue.json")
     parser.add_argument("--publish", action="store_true", help="Publish only individually approved entries")
+    parser.add_argument("--check-auth", action="store_true", help="Verify OAuth and channel without posting")
     args = parser.parse_args()
+    if args.check_auth:
+        token = access_token()
+        identity = get_json("/channels?part=id&mine=true", token)
+        ids = [c["id"] for c in identity.get("items", [])]
+        if CHANNEL_ID not in ids:
+            raise SystemExit("OAuth channel mismatch. Expected Anks Dharam AI Films; no comments posted.")
+        print("SUCCESS: GitHub OAuth credentials verified for Anks Dharam AI Films. No comments posted.")
+        return
     queue = json.loads(Path(args.queue).read_text(encoding="utf-8"))
     entries = queue.get("comments", [])
     approved = [e for e in entries if e.get("approved") is True]

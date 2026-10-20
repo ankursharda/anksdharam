@@ -23,6 +23,18 @@ jobs:
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python growth-agents/upload_monitor.py
+      - name: Prepare Instagram previews for all new uploads
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          queue = json.loads(Path("growth-agents/output/instagram-new-uploads.json").read_text())
+          for item in queue:
+              subprocess.run(["python", "growth-agents/instagram_thumbnail_post.py",
+                              "--video-id", item["video_id"], "--title", item["title"]], check=True)
+          print(f"Prepared {len(queue)} Instagram previews; no posts published.")
+          PY
       - name: Persist upload monitor state
         run: |
           git config user.name "Anks Dharam Growth Bot"
@@ -36,5 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: latest-upload-promotion-drafts
-          path: growth-agents/output/weekly-upload-promotion.md
+          path: |
+            growth-agents/output/weekly-upload-promotion.md
+            growth-agents/output/instagram-new-uploads.json
           retention-days: 90

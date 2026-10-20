@@ -1,8 +1,6 @@
 name: Anks Dharam Channel-Wide Instagram Preview
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 5 * * *' # Daily 11:00 IST
 permissions:
   contents: read
 jobs:

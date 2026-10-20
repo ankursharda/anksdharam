@@ -13,6 +13,8 @@ HANDLES = [
     "epicaifilms2024", "VedicKathaYT", "sarvatrahindutva",
     "Bhaktavatsal3", "sanatanlegendsai", "LostEchos27",
     "PuranicCodex", "dhalpritam1", "HINDUSTORIES",
+    # Additional devotional, film and mythology channels; own @anksdharam excluded.
+    "tseries", "TSeriesBhaktiSagar", "ShemarooBhakti", "shemaroo", "shemaroomovies", "SaregamaBhakti", "SaregamaMusic", "rdcbhaktisagar", "rkddigital", "SanskargroupInOfficial", "bhaktisadhnabhajan", "EpicTvOfficial", "PenBhakti", "Tilak",
 ]
 KEY = os.environ.get("YOUTUBE_API_KEY")
 if not KEY:

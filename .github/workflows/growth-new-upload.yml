@@ -45,7 +45,7 @@ jobs:
                                        "--video-id", video_id, "--title", item["title"], "--publish"])
               if result.returncode == 0:
                   ledger[video_id] = {"title": item["title"]}
-                  ledger_path.write_text(json.dumps(ledger, indent=2, ensure_ascii=False) + "\\n")
+                  ledger_path.write_text(json.dumps(ledger, indent=2, ensure_ascii=False) + "\n")
               else:
                   errors.append(video_id)
           if errors:

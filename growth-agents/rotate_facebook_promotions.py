@@ -28,7 +28,15 @@ def api(method, path, token, params):
         with urlopen(Request(url, data=data, method=method), timeout=35) as response:
             return json.load(response)
     except HTTPError as exc:
-        raise RuntimeError(f"Facebook Graph API HTTP {exc.code} at {path}") from None
+        # Facebook's JSON error describes missing permissions or Page restrictions.
+        # Do not include the request URL or access token in logs.
+        try:
+            payload = json.loads(exc.read().decode("utf-8"))
+            err = payload.get("error", {})
+            detail = f"code={err.get('code', 'unknown')} subcode={err.get('error_subcode', 'none')} message={err.get('message', 'unknown')}"
+        except (ValueError, UnicodeError):
+            detail = "Response body was not valid JSON"
+        raise RuntimeError(f"Facebook Graph API HTTP {exc.code} at {path}: {detail}") from None
     except (URLError, TimeoutError, ValueError) as exc:
         raise RuntimeError(f"Facebook API error at {path}: {type(exc).__name__}") from None
 

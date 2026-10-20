@@ -1,0 +1,30 @@
+name: Approved YouTube Engagement
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish individually approved queue entries (requires OAuth secrets)"
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  engage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Validate queue and optionally publish
+        env:
+          YOUTUBE_OAUTH_CLIENT_ID: ${{ secrets.YOUTUBE_OAUTH_CLIENT_ID }}
+          YOUTUBE_OAUTH_CLIENT_SECRET: ${{ secrets.YOUTUBE_OAUTH_CLIENT_SECRET }}
+          YOUTUBE_OAUTH_REFRESH_TOKEN: ${{ secrets.YOUTUBE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          if [ "${{ inputs.publish }}" = "true" ]; then
+            python growth-agents/youtube_engagement.py --publish
+          else
+            python growth-agents/youtube_engagement.py
+          fi

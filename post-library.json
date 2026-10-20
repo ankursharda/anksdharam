@@ -1,0 +1,39 @@
+{
+  "posts": [
+    {
+      "category": "FEATURED FILM",
+      "title": "Shani Dev — Childhood Story",
+      "description": "Discover Shani Dev's childhood in an Anks Dharam cinematic film, selected for the Neu Wave AI Film Festival.",
+      "url": "https://youtu.be/3MHOr1g1N9M",
+      "cta": "Watch Film ↗"
+    },
+    {
+      "category": "DIVINE STORIES",
+      "title": "Why Is Shiv Called Neelkanth?",
+      "description": "Explore the story of Samudra Manthan and Lord Shiva's sacrifice in this cinematic retelling.",
+      "url": "https://youtu.be/dhhGwQdxKro",
+      "cta": "Watch Story ↗"
+    },
+    {
+      "category": "VISHNU AVATAR",
+      "title": "Narasimha Avatar — The Divine Protector",
+      "description": "Discover the powerful story of Lord Vishnu's Narasimha incarnation through cinematic mythology animation.",
+      "url": "https://youtu.be/CBCfQmdMVuM",
+      "cta": "Watch Film ↗"
+    },
+    {
+      "category": "COMING SOON",
+      "title": "Shani Dev — Part 2",
+      "description": "Marriage of Shani Dev. Upcoming Anks Dharam cinematic story.",
+      "url": "",
+      "cta": ""
+    },
+    {
+      "category": "COMING SOON",
+      "title": "Shani Dev — Part 3",
+      "description": "Shani Dev vs Yamraj. Upcoming Anks Dharam cinematic story.",
+      "url": "",
+      "cta": ""
+    }
+  ]
+}

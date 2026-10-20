@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rank 13 competitor channels for reusable Anks Dharam mythology audience research.
+"""Rank public competitor channels for reusable Anks Dharam mythology audience research.
 
 This is an editorial relevance heuristic, NOT a prediction of clicks or a verified
 Google Ads placement eligibility check.
@@ -14,7 +14,9 @@ from pathlib import Path
 HANDLES = ["devimaa3728", "TrueRealms01", "TheDivineTales", "IndianMonk",
            "epicaifilms2024", "VedicKathaYT", "sarvatrahindutva",
            "Bhaktavatsal3", "sanatanlegendsai", "LostEchos27",
-           "PuranicCodex", "dhalpritam1", "HINDUSTORIES"]
+           "PuranicCodex", "dhalpritam1", "HINDUSTORIES",
+    # Additional devotional, film and mythology channels; own @anksdharam excluded.
+    "tseries", "TSeriesBhaktiSagar", "ShemarooBhakti", "shemaroo", "shemaroomovies", "SaregamaBhakti", "SaregamaMusic", "rdcbhaktisagar", "rkddigital", "SanskargroupInOfficial", "bhaktisadhnabhajan", "EpicTvOfficial", "PenBhakti", "Tilak"]
 KEY = os.environ.get("YOUTUBE_API_KEY")
 if not KEY:
     raise SystemExit("Missing YOUTUBE_API_KEY")

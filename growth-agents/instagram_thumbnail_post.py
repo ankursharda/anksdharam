@@ -90,7 +90,9 @@ def main():
     published = api("POST", f"/{user_id}/media_publish", token, {
         "creation_id": container_id
     })
-    if not published.get("id"):\n        raise RuntimeError("Instagram did not confirm a published media ID")\n    print("Published Instagram media ID:", published["id"])
+    if not published.get("id"):
+        raise RuntimeError("Instagram did not confirm a published media ID")
+    print("Published Instagram media ID:", published["id"])
     return 0
 
 if __name__ == "__main__":

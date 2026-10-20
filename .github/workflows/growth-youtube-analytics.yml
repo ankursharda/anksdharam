@@ -1,23 +1,41 @@
-name: Growth Agent - YouTube Analytics (manual test)
+name: Growth Agent - YouTube Analytics
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * *' # 09:00 IST (UTC+05:30)
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   snapshot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Recover previous analytics history if available
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          mkdir -p growth-agents/previous
+          prior=$(gh run list --workflow growth-youtube-analytics.yml --status success --limit 20 --json databaseId --jq '.[0].databaseId' || true)
+          if [ -n "$prior" ]; then
+            gh run download "$prior" --name shani-dev-analytics --dir growth-agents/previous || echo "No previous history artifact; starting new history."
+          fi
       - name: Fetch public video analytics
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python3 growth-agents/youtube_analytics.py
-      - name: Upload result
+      - name: Build daily history
+        run: python3 growth-agents/build_history.py
+      - name: Upload report and history
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: shani-dev-analytics
-          path: growth-agents/output/latest.json
-          retention-days: 30
+          path: |
+            growth-agents/output/latest.json
+            growth-agents/output/history.csv
+          retention-days: 90

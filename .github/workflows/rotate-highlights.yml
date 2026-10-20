@@ -1,0 +1,45 @@
+name: Rotate Anks Dharam Highlights
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Select two verified posts
+        run: |
+          python3 - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          posts = [
+            {"category":"FEATURED FILM","title":"Shani Dev — Childhood Story","description":"Watch Anks Dharam's cinematic film about the childhood of Shani Dev, an Official Selection at Neu Wave AI Film Festival.","url":"https://youtu.be/3MHOr1g1N9M","cta":"Watch Film ↗"},
+            {"category":"DIVINE STORIES","title":"Why Is Shiv Called Neelkanth?","description":"Explore the legend of Samudra Manthan and Lord Shiva's sacrifice through cinematic storytelling.","url":"https://youtu.be/dhhGwQdxKro","cta":"Watch Story ↗"},
+            {"category":"VISHNU AVATAR","title":"Narasimha Avatar","description":"Discover the divine incarnation of Lord Vishnu in Anks Dharam's epic mythology film.","url":"https://youtu.be/CBCfQmdMVuM","cta":"Watch Film ↗"},
+            {"category":"COMING SOON","title":"Shani Dev — Part 2","description":"Marriage of Shani Dev. A forthcoming chapter in the Anks Dharam Shani Dev series."},
+            {"category":"COMING SOON","title":"Shani Dev — Part 3","description":"Shani Dev vs Yamraj. A forthcoming chapter in the Anks Dharam Shani Dev series."}
+          ]
+          now = datetime.now(timezone.utc)
+          week = now.date().toordinal() // 7
+          offset = week % len(posts)
+          chosen = [posts[offset], posts[(offset + 1) % len(posts)]]
+          Path("posts.json").write_text(json.dumps({"updated":now.date().isoformat(),"posts":chosen},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+      - name: Publish if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add posts.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Rotate two verified Anks Dharam highlights"
+            git push
+          fi

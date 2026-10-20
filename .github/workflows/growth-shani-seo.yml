@@ -1,0 +1,22 @@
+name: Growth Agent - Shani Dev SEO Review
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SEO review from public video metadata
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 growth-agents/seo_review.py
+      - name: Upload SEO report
+        uses: actions/upload-artifact@v4
+        with:
+          name: shani-seo-review
+          path: growth-agents/output/shani-seo-review.md
+          retention-days: 90

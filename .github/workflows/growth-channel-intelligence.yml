@@ -30,18 +30,23 @@ jobs:
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
         run: |
           python growth-agents/rotate_instagram_promotions.py
+      - name: Publish one ranked video to authorized Facebook Page
+        env:
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+        run: python growth-agents/rotate_facebook_promotions.py
       - name: Persist confirmed Instagram promotions
         if: always()
         run: |
           git config user.name "Anks Dharam Growth Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -f growth-agents/instagram-published.json ]; then
-            git add growth-agents/instagram-published.json
-            if ! git diff --cached --quiet; then
-              git commit -m "Track automated Instagram library promotions [skip ci]"
-              git pull --rebase origin main
-              git push
-            fi
+          for file in growth-agents/instagram-published.json growth-agents/facebook-published.json; do
+            if [ -f "$file" ]; then git add "$file"; fi
+          done
+          if ! git diff --cached --quiet; then
+            git commit -m "Track confirmed social promotions [skip ci]"
+            git pull --rebase origin main
+            git push
           fi
       - name: Save full library and growth opportunities
         if: always()

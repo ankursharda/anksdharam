@@ -23,7 +23,38 @@ jobs:
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python growth-agents/upload_monitor.py
+      - name: Automatically publish new uploads to Instagram
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          queue = json.loads(Path("growth-agents/output/instagram-new-uploads.json").read_text())
+          ledger_path = Path("growth-agents/instagram-published.json")
+          ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else {}
+          errors = []
+          for item in queue:
+              video_id = item["video_id"]
+              if video_id in ledger:
+                  print(f"Skipping already published video: {video_id}")
+                  continue
+              print(f"Publishing new video promotion: {video_id}")
+              result = subprocess.run(["python", "growth-agents/instagram_thumbnail_post.py",
+                                       "--video-id", video_id, "--title", item["title"], "--publish"])
+              if result.returncode == 0:
+                  ledger[video_id] = {"title": item["title"]}
+                  ledger_path.write_text(json.dumps(ledger, indent=2, ensure_ascii=False) + "\\n")
+              else:
+                  errors.append(video_id)
+          if errors:
+              print("Publishing failed for: " + ", ".join(errors))
+              raise SystemExit(1)
+          print(f"Processed {len(queue)} newly detected uploads.")
+          PY
       - name: Prepare Instagram previews for all new uploads
+        if: always()
         run: |
           python - <<'PY'
           import json
@@ -35,7 +66,20 @@ jobs:
                               "--video-id", item["video_id"], "--title", item["title"]], check=True)
           print(f"Prepared {len(queue)} Instagram previews; no posts published.")
           PY
+      - name: Persist Instagram publishing ledger
+        if: always()
+        run: |
+          git config user.name "Anks Dharam Growth Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f growth-agents/instagram-published.json ]; then
+            git add growth-agents/instagram-published.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Record Instagram promotions [skip ci]"
+              git push
+            fi
+          fi
       - name: Persist upload monitor state
+        if: success()
         run: |
           git config user.name "Anks Dharam Growth Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,6 +89,7 @@ jobs:
             git push
           fi
       - name: Save promotion drafts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: latest-upload-promotion-drafts

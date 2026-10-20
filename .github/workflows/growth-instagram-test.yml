@@ -1,0 +1,18 @@
+name: Instagram Token Connection Test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-instagram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate Instagram connection (read-only)
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+        run: python growth-agents/instagram_token_check.py

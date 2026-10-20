@@ -62,10 +62,14 @@ for handle in HANDLES:
                      "matching_videos": matches[:5],
                      "channel_url": "https://www.youtube.com/channel/" + ch["id"]})
     except Exception as e:
+        print(f"ERROR resolving @{handle}: {type(e).__name__}: {e}", flush=True)
         rows.append({"handle": handle, "status": "ERROR", "error": str(e)[:180]})
 
 ranked = sorted([x for x in rows if x["status"] == "OK"],
                 key=lambda x: (x["score"], x["matched_video_count"]), reverse=True)
+if not any(x["status"] == "OK" for x in rows):
+    raise SystemExit("Audience Agent failed: zero channels resolved. Check YouTube API quota, permissions, and error logs.")
+
 out = Path("growth-agents/output")
 out.mkdir(parents=True, exist_ok=True)
 now = dt.datetime.now(dt.timezone.utc).isoformat()

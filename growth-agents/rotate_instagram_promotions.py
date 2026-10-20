@@ -8,11 +8,12 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path("growth-agents")
-QUEUE = ROOT / "output/channel-growth-opportunities.json"
+QUEUE = ROOT / "channel-catalog.json"
 LEDGER = ROOT / "instagram-published.json"
 
 def main():
-    ranked = json.loads(QUEUE.read_text(encoding="utf-8"))
+    catalog = json.loads(QUEUE.read_text(encoding="utf-8"))
+    ranked = sorted(catalog["videos"], key=lambda v: v.get("opportunity_score", 0), reverse=True)
     posted = json.loads(LEDGER.read_text(encoding="utf-8")) if LEDGER.exists() else {}
     if not os.environ.get("INSTAGRAM_ACCESS_TOKEN"):
         raise SystemExit("Missing INSTAGRAM_ACCESS_TOKEN; no publication attempted.")
@@ -29,7 +30,7 @@ def main():
         LEDGER.write_text(json.dumps(posted, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print("Exactly one evergreen promotion published and recorded.")
         return
-    print("No unpromoted public video in current shortlist; no post created.")
+    print("No unpromoted public video in entire library; no post created.")
 
 if __name__ == "__main__":
     main()

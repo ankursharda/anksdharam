@@ -657,34 +657,25 @@ footer {
 
 </section>
 
-<!-- UPCOMING RELEASES -->
+<!-- DYNAMIC HIGHLIGHTS: ONLY THIS SECTION IS AUTOMATED -->
 
 <section class="content" id="upcoming">
 
-  <h2 class="section-title">Upcoming Cinematic Releases</h2>
+  <h2 class="section-title">Highlights &amp; Updates</h2>
 
-  <div class="upcoming-grid">
-
+  <div class="upcoming-grid" id="dynamic-posts">
     <article class="upcoming-card">
-
-      <span class="coming-soon">COMING SOON</span>
-
-      <h3>Shani Dev — Part 2</h3>
-
-      <p>Marriage of Shani Dev</p>
-
+      <span class="coming-soon">FEATURED FILM</span>
+      <h3>Shani Dev — Childhood Story</h3>
+      <p>Official Selection at Neu Wave AI Film Festival.</p>
+      <a class="btn dark-btn" href="https://youtu.be/3MHOr1g1N9M" target="_blank" rel="noopener noreferrer">Watch Film ↗</a>
     </article>
-
     <article class="upcoming-card">
-
-      <span class="coming-soon">COMING SOON</span>
-
-      <h3>Shani Dev — Part 3</h3>
-
-      <p>Shani Dev vs Yamraj</p>
-
+      <span class="coming-soon">DIVINE STORIES</span>
+      <h3>Why Is Shiv Called Neelkanth?</h3>
+      <p>Discover the legend of Samudra Manthan and Lord Shiva.</p>
+      <a class="btn dark-btn" href="https://youtu.be/dhhGwQdxKro" target="_blank" rel="noopener noreferrer">Watch Story ↗</a>
     </article>
-
   </div>
 
 </section>
@@ -767,6 +758,48 @@ footer {
 <script>
 document.getElementById("year").textContent =
   new Date().getFullYear();
+
+// Posts are maintained independently in posts.json.
+// Only the two cards in #dynamic-posts are updated.
+(async function loadPosts() {
+  try {
+    const response = await fetch("./posts.json", {cache:"no-store"});
+    if (!response.ok) return;
+    const data = await response.json();
+    const posts = Array.isArray(data.posts) ? data.posts.slice(0,2) : [];
+    if (posts.length !== 2) return;
+    const grid = document.getElementById("dynamic-posts");
+    const fragment = document.createDocumentFragment();
+    for (const post of posts) {
+      if (!post.title || !post.description || !post.category) return;
+      const article = document.createElement("article");
+      article.className = "upcoming-card";
+      const label = document.createElement("span");
+      label.className = "coming-soon";
+      label.textContent = post.category;
+      const title = document.createElement("h3");
+      title.textContent = post.title;
+      const desc = document.createElement("p");
+      desc.textContent = post.description;
+      article.append(label,title,desc);
+      if (post.url) {
+        const url = new URL(post.url);
+        if (url.protocol !== "https:") return;
+        const link = document.createElement("a");
+        link.className = "btn dark-btn";
+        link.href = url.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = post.cta || "Read More ↗";
+        article.append(link);
+      }
+      fragment.append(article);
+    }
+    grid.replaceChildren(fragment);
+  } catch (error) {
+    // Keep the original cards visible if posts.json is unavailable.
+  }
+})();
 </script>
 
 </body>

@@ -36,5 +36,6 @@
       "approved": true,
       "approval_reference": "user-approved-four-replies-2026-10-20-4"
     }
-  ]
+  ],
+  "automation": "Approved replies auto-publish on main queue update; existing own-channel replies checked before posting."
 }

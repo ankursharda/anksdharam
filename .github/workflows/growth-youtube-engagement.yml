@@ -1,5 +1,9 @@
 name: Approved YouTube Engagement
 on:
+  push:
+    branches: [main]
+    paths:
+      - "growth-agents/engagement-queue.json"
   workflow_dispatch:
     inputs:
       check_auth:
@@ -14,6 +18,9 @@ on:
         default: false
 permissions:
   contents: read
+concurrency:
+  group: youtube-approved-engagement
+  cancel-in-progress: false
 jobs:
   engage:
     runs-on: ubuntu-latest
@@ -28,7 +35,9 @@ jobs:
           YOUTUBE_OAUTH_CLIENT_SECRET: ${{ secrets.YOUTUBE_OAUTH_CLIENT_SECRET }}
           YOUTUBE_OAUTH_REFRESH_TOKEN: ${{ secrets.YOUTUBE_OAUTH_REFRESH_TOKEN }}
         run: |
-          if [ "${{ inputs.check_auth }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            python growth-agents/youtube_engagement.py --publish
+          elif [ "${{ inputs.check_auth }}" = "true" ]; then
             python growth-agents/youtube_engagement.py --check-auth
           elif [ "${{ inputs.publish }}" = "true" ]; then
             python growth-agents/youtube_engagement.py --publish

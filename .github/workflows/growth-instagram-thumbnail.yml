@@ -1,0 +1,41 @@
+name: Instagram Thumbnail Promotion
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: YouTube video ID (11 characters)
+        required: true
+        type: string
+      video_title:
+        description: Exact film title
+        required: true
+        type: string
+      publish:
+        description: Publish publicly to Instagram (unchecked = preview only)
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: instagram-thumbnail-promotion
+  cancel-in-progress: false
+jobs:
+  instagram:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Prepare or publish Instagram thumbnail
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          VIDEO_ID: ${{ inputs.video_id }}
+          VIDEO_TITLE: ${{ inputs.video_title }}
+          PUBLISH: ${{ inputs.publish }}
+        run: |
+          args=(--video-id "$VIDEO_ID" --title "$VIDEO_TITLE")
+          if [ "$PUBLISH" = "true" ]; then args+=(--publish); fi
+          python growth-agents/instagram_thumbnail_post.py "${args[@]}"

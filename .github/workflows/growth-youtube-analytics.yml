@@ -1,0 +1,23 @@
+name: Growth Agent - YouTube Analytics (manual test)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch public video analytics
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 growth-agents/youtube_analytics.py
+      - name: Upload result
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shani-dev-analytics
+          path: growth-agents/output/latest.json
+          retention-days: 30

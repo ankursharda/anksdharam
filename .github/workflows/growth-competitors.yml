@@ -1,4 +1,4 @@
-name: Growth Agent - Competitor Intelligence
+name: Unified YouTube Audience Research
 on:
   workflow_dispatch:
   schedule:
@@ -7,20 +7,39 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: unified-audience-research
+  cancel-in-progress: false
+
 jobs:
   research:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Research 13 competitor channels
+      - name: Research 27 external channels
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python3 growth-agents/competitor_intelligence.py
-      - name: Upload competitor reports
+      - name: Rank relevant mythology audiences
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 growth-agents/audience_shortlist.py
+      - name: Research own and external public comments
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python3 growth-agents/comment_intelligence.py
+      - name: Upload combined research reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: competitor-intelligence
+          name: unified-audience-research
           path: |
             growth-agents/output/competitor-intelligence.md
             growth-agents/output/competitor-intelligence.json
+            growth-agents/output/channel-audience-shortlist.md
+            growth-agents/output/channel-audience-shortlist.json
+            growth-agents/output/comment-intelligence.md
+            growth-agents/output/comment-intelligence.json
+          if-no-files-found: warn
           retention-days: 90

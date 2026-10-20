@@ -5,7 +5,7 @@ import json
 import os
 import re
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
@@ -79,8 +79,32 @@ def main():
     if CHANNEL_ID not in ids:
         raise SystemExit("OAuth token does not belong to Anks Dharam. Refusing to publish.")
     for e in approved:
+        if e["type"] != "reply":
+            raise SystemExit("Automatic publishing supports approved replies only.")
+    for e in approved:
         # A human must explicitly approve each final text and target in the queue.
         if e["type"] == "reply":
+            # Re-check existing replies before each post to avoid duplicates on workflow retries.
+            page = ""
+            duplicate = False
+            for _ in range(20):
+                query = "/comments?part=snippet&maxResults=100&parentId=" + quote(e["parent_comment_id"], safe="")
+                if page:
+                    query += "&pageToken=" + quote(page, safe="")
+                existing = get_json(query, token)
+                for item in existing.get("items", []):
+                    sn = item.get("snippet", {})
+                    if sn.get("authorChannelId", {}).get("value") == CHANNEL_ID and sn.get("textOriginal") == e["text"]:
+                        duplicate = True
+                        break
+                if duplicate or not existing.get("nextPageToken"):
+                    break
+                page = existing["nextPageToken"]
+            else:
+                raise SystemExit("Too many replies to verify duplicates; refusing to publish.")
+            if duplicate:
+                print(json.dumps({"approval_reference": e["approval_reference"], "status": "already_posted"}))
+                continue
             payload = {"snippet": {"parentId": e["parent_comment_id"], "textOriginal": e["text"]}}
             path = "/comments?part=snippet"
         else:

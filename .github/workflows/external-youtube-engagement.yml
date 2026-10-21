@@ -1,0 +1,28 @@
+name: Anks Dharam External YouTube Discussion Discovery
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * *' # Daily 09:00 IST, ahead of social promotion workflows
+permissions:
+  contents: read
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Discover relevant public conversations (read-only)
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python growth-agents/external_youtube_discovery.py
+      - name: Save human-review discussion candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-youtube-engagement-review
+          path: |
+            growth-agents/output/external-youtube-discussions.json
+            growth-agents/output/external-youtube-review.md
+          retention-days: 14

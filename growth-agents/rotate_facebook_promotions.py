@@ -68,14 +68,14 @@ def main():
                     continue
                 title = " ".join(video["title"].split())[:240]
                 link = f"https://www.youtube.com/watch?v={vid}"
-                message = f"{title}\\n\\nWatch on Anks Dharam: {link}\\n\\n#AnksDharam #HinduMythology"
+                message = f"{title}\n\nWatch on Anks Dharam: {link}\n\n#AnksDharam #HinduMythology"
                 result = api("POST", f"/{page_id}/feed", token, {"message": message, "link": link, "published": "true"})
                 post_id = result.get("id")
                 if not post_id:
                     raise RuntimeError("No confirmed Facebook post ID")
                 page_posts[vid] = {"title": title, "facebook_post_id": post_id}
                 posted[page_id] = page_posts
-                LEDGER.write_text(json.dumps(posted, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+                LEDGER.write_text(json.dumps(posted, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
                 print(f"{label}: published {vid} as {post_id}")
                 break
             else:

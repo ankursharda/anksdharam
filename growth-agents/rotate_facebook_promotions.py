@@ -5,6 +5,7 @@ Required GitHub Actions secrets: FACEBOOK_PAGE_ID, FACEBOOK_PAGE_ACCESS_TOKEN.
 Never print tokens. Never publish to a personal profile. Never mark failed posts done.
 """
 import json
+from datetime import datetime, timezone
 import os
 import re
 from pathlib import Path
@@ -50,6 +51,11 @@ def main():
     videos = sorted(catalog["videos"], key=lambda v: v.get("opportunity_score", 0), reverse=True)
     failures = []
     for label, page_id, token in pages:
+        is_shared_page = label == "Geeta Press Gorakhpur"
+        # Limit shared-admin Page promotions to Wednesdays (UTC/IST same weekday at 09:45 IST).
+        if is_shared_page and datetime.now(timezone.utc).weekday() != 2:
+            print(f"{label}: weekly Wednesday schedule; skipping today.")
+            continue
         if not page_id or not token:
             print(f"{label}: credentials not configured; skipping.")
             continue
@@ -69,8 +75,13 @@ def main():
                 title = " ".join(video["title"].split())[:240]
                 link = f"https://www.youtube.com/watch?v={vid}"
                 message = f"{title}\n\nWatch on Anks Dharam: {link}\n\n#AnksDharam #HinduMythology"
-                result = api("POST", f"/{page_id}/feed", token, {"message": message, "link": link, "published": "true"})
-                post_id = result.get("id")
+                if is_shared_page:
+                    # Upload a visible YouTube thumbnail as the Page photo, with the video link in its caption.
+                    thumbnail = f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+                    result = api("POST", f"/{page_id}/photos", token, {"url": thumbnail, "caption": message, "published": "true"})
+                else:
+                    result = api("POST", f"/{page_id}/feed", token, {"message": message, "link": link, "published": "true"})
+                post_id = result.get("post_id") or result.get("id")
                 if not post_id:
                     raise RuntimeError("No confirmed Facebook post ID")
                 page_posts[vid] = {"title": title, "facebook_post_id": post_id}

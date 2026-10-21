@@ -1,0 +1,41 @@
+name: Anks Dharam Approved YouTube Comment
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: 'YouTube video ID (11 characters)'
+        required: true
+        type: string
+      parent_comment_id:
+        description: 'Existing comment ID to reply to; leave blank for top-level comment'
+        required: false
+        type: string
+      approved_comment:
+        description: 'Final, human-approved original comment text (no links)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  post-approved-comment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: youtube-comment-publishing
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Post exactly one approved comment as Anks Dharam
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          TARGET_VIDEO: ${{ inputs.video_id }}
+          PARENT_COMMENT: ${{ inputs.parent_comment_id }}
+          APPROVED_COMMENT: ${{ inputs.approved_comment }}
+        run: |
+          python growth-agents/publish_approved_youtube_comment.py \
+            --video-id "$TARGET_VIDEO" \
+            --parent-id "$PARENT_COMMENT" \
+            --text "$APPROVED_COMMENT"

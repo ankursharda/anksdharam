@@ -37,12 +37,18 @@ jobs:
           FACEBOOK_GEETA_PAGE_ID: ${{ secrets.FACEBOOK_GEETA_PAGE_ID }}
           FACEBOOK_GEETA_PAGE_TOKEN: ${{ secrets.FACEBOOK_GEETA_PAGE_TOKEN }}
         run: python growth-agents/rotate_facebook_promotions.py
+      - name: Publish one Pinterest Pin when explicitly enabled
+        env:
+          PINTEREST_PUBLISH_ENABLED: ${{ vars.PINTEREST_PUBLISH_ENABLED }}
+          PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+          PINTEREST_BOARD_ID: ${{ vars.PINTEREST_BOARD_ID }}
+        run: python growth-agents/rotate_pinterest_promotions.py
       - name: Persist confirmed Instagram promotions
         if: always()
         run: |
           git config user.name "Anks Dharam Growth Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for file in growth-agents/instagram-published.json growth-agents/facebook-published.json; do
+          for file in growth-agents/instagram-published.json growth-agents/facebook-published.json growth-agents/pinterest-published.json; do
             if [ -f "$file" ]; then git add "$file"; fi
           done
           if ! git diff --cached --quiet; then

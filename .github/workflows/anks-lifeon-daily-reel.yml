@@ -1,0 +1,27 @@
+name: Anks Lifeon Daily Instagram Reel Preview
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 2 * * *' # 08:00 IST, UTC+05:30
+permissions:
+  contents: read
+concurrency:
+  group: anks-lifeon-daily-reel-preview
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Select rights-approved Reel candidate (no publishing)
+        run: python growth-agents/instagram_daily_reel.py
+      - name: Save preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: anks-lifeon-daily-reel-preview
+          path: growth-agents/output/instagram-daily-reel-preview.json
+          retention-days: 14

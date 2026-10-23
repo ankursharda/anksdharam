@@ -36,5 +36,4 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           APPROVED_VIDEO_ID: ${{ inputs.video_id }}
           APPROVED_COMMENT: ${{ inputs.comment }}
-          COMMENT_APPROVED: ${{ inputs.approved }}
-        run: python growth-agents/publish_approved_youtube_comment.py
+        run: python growth-agents/publish_approved_youtube_comment.py --video-id "$APPROVED_VIDEO_ID" --text "$APPROVED_COMMENT"

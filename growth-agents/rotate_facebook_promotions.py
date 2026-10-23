@@ -92,7 +92,12 @@ def main():
             else:
                 print(f"{label}: all public videos already promoted.")
         except RuntimeError as exc:
-            failures.append(f"{label}: {exc}")
+            detail = str(exc)
+            if "code=190" in detail and "subcode=463" in detail:
+                print(f"::error title=Facebook credential expired::{label} Page token has expired. Renew the Page access token and replace its GitHub Actions secret. No Facebook post was published.")
+                failures.append(f"{label}: expired Facebook Page token; replace its GitHub Actions secret")
+            else:
+                failures.append(f"{label}: {exc}")
     if failures:
         raise SystemExit("; ".join(failures))
 

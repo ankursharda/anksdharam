@@ -52,12 +52,42 @@ def subjects(name):
     return {subject for subject, aliases in SUBJECTS.items()
             if any(alias in tokens or (len(alias) >= 5 and alias in normalized) for alias in aliases)}
 
+# Scene/mood categories are conservative: ambiguous or opposing cues block a pairing.
+MOODS = {
+    "peaceful": ("peace", "peaceful", "calm", "meditation", "meditating", "dhyan", "serene", "relax", "soothing", "sleep"),
+    "devotional": ("bhajan", "aarti", "arti", "mantra", "chant", "stotram", "stotra", "prayer", "puja", "pooja", "devotion", "devotional"),
+    "battle": ("battle", "war", "fight", "fighting", "combat", "attack", "rage", "angry", "asur", "asura", "demon", "rakshas", "rakshasa", "killing", "slaying"),
+    "celebration": ("festival", "celebration", "dance", "dancing", "wedding", "vivah", "holi", "diwali"),
+    "sad": ("sad", "sorrow", "mourning", "crying", "grief", "tragic"),
+}
+# Only battle/peace and battle/devotional combinations are blocked; unspecified
+# mood remains allowed for generic deity portraits, but explicit battle images
+# require battle-themed audio to avoid incongruous religious pairings.
+def mood_tags(name):
+    tokens = set(re.findall(r"[a-z]+", name.lower()))
+    return {mood for mood, aliases in MOODS.items() if tokens.intersection(aliases)}
+
+def compatible(audio, image):
+    a, i = mood_tags(audio["name"]), mood_tags(image["name"])
+    if "battle" in i and "battle" not in a:
+        return False
+    if "battle" in a and ("peaceful" in i or "devotional" in i) and "battle" not in i:
+        return False
+    if "peaceful" in a and ("battle" in i or "sad" in i):
+        return False
+    if "sad" in a and "celebration" in i:
+        return False
+    if "celebration" in a and "sad" in i:
+        return False
+    return True
+
 def choose_pair(music, images):
     candidates = [(audio, image) for audio in music for image in images
-                  if subjects(audio["name"]) & subjects(image["name"])]
+                  if subjects(audio["name"]) & subjects(image["name"])
+                  and compatible(audio, image)]
     if not candidates:
-        raise RuntimeError("No matching music/image subjects in filenames. "
-                           "Rename files with a common deity/subject name; no random pairing will be made.")
+        raise RuntimeError("No safe subject-and-mood music/image pairing found in filenames. "
+                           "Add subject and scene/mood keywords to filenames; no random pairing will be made.")
     return random.choice(candidates)
 
 def main():
@@ -68,6 +98,7 @@ def main():
     if not music or not images:raise RuntimeError("Music and image folders must both contain usable files")
     audio,image=choose_pair(music,images)
     print('Matched subject(s):', ', '.join(sorted(subjects(audio['name']) & subjects(image['name']))))
+    print('Audio mood:', sorted(mood_tags(audio['name'])), 'Image mood:', sorted(mood_tags(image['name'])))
     Path("reels-preview").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         paths=[]

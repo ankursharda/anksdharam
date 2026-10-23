@@ -1,0 +1,40 @@
+name: YouTube Approved Comment Publisher
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: 'YouTube video ID (11 characters)'
+        required: true
+        type: string
+      comment:
+        description: 'Exact comment reviewed and approved by the channel owner'
+        required: true
+        type: string
+      approved:
+        description: 'Confirm this exact comment and video were approved'
+        required: true
+        type: choice
+        options:
+          - 'NO'
+          - 'YES'
+permissions:
+  contents: read
+jobs:
+  publish-approved-comment:
+    if: ${{ inputs.approved == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Publish exactly one approved comment
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          APPROVED_VIDEO_ID: ${{ inputs.video_id }}
+          APPROVED_COMMENT: ${{ inputs.comment }}
+          COMMENT_APPROVED: ${{ inputs.approved }}
+        run: python growth-agents/publish_approved_youtube_comment.py

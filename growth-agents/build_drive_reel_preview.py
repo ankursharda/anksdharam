@@ -114,10 +114,10 @@ def main():
                 shutil.copyfileobj(r,out)
             paths.append(path)
         output="reels-preview/reel-preview.mp4"
-        # 30 seconds, 1080x1920, gentle Ken Burns zoom, H.264/AAC.
-        vf="scale=1200:2134:force_original_aspect_ratio=increase,crop=1200:2134,zoompan=z='min(zoom+0.00015,1.12)':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=900:s=1080x1920:fps=30,format=yuv420p"
-        cmd=["ffmpeg","-hide_banner","-loglevel","error","-y","-loop","1","-framerate","30","-i",str(paths[1]),"-stream_loop","-1","-i",str(paths[0]),"-t","30","-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","26","-c:a","aac","-b:a","128k","-pix_fmt","yuv420p","-movflags","+faststart",output]
-        subprocess.run(cmd,check=True,timeout=540)
+        # 30 seconds, 720x1280, lightweight gentle zoom, H.264/AAC.
+        vf="scale=800:1424:force_original_aspect_ratio=increase,crop=800:1424,zoompan=z='min(zoom+0.00012,1.10)':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=600:s=720x1280:fps=20,format=yuv420p"
+        cmd=["ffmpeg","-hide_banner","-loglevel","error","-y","-loop","1","-framerate","30","-i",str(paths[1]),"-stream_loop","-1","-i",str(paths[0]),"-t","30","-vf",vf,"-c:v","libx264","-preset","ultrafast","-crf","28","-threads","2","-c:a","aac","-b:a","128k","-pix_fmt","yuv420p","-movflags","+faststart",output]
+        subprocess.run(cmd,check=True,timeout=360)
     Path("reels-preview/selection.json").write_text(json.dumps({"audio":audio["name"],"image":image["name"],"duration_seconds":30},indent=2))
     history["pairs"].append({"audio_id":audio["id"],"image_id":image["id"],"audio_name":audio["name"],"image_name":image["name"]})
     history_path.write_text(json.dumps(history,indent=2,ensure_ascii=False)+"\n")

@@ -43,6 +43,11 @@ jobs:
           PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
           PINTEREST_BOARD_ID: ${{ vars.PINTEREST_BOARD_ID }}
         run: python growth-agents/rotate_pinterest_promotions.py
+      - name: Track Pinterest performance for confirmed Pins
+        if: always()
+        env:
+          PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+        run: python growth-agents/track_pinterest_performance.py
       - name: Persist confirmed Instagram promotions
         if: always()
         run: |
@@ -66,4 +71,5 @@ jobs:
             growth-agents/output/channel-growth-report.md
             growth-agents/output/channel-growth-opportunities.json
             growth-agents/output/channel-distribution-plan.json
+            growth-agents/output/pinterest-tracking.json
           retention-days: 30

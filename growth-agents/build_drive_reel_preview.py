@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Build one preview Reel from Google Drive assets. Never publishes."""
-import json, os, random, subprocess, tempfile
+import json, os, random, re, subprocess, tempfile
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -28,13 +28,46 @@ def files(folder,token):
         if not page:break
     return result
 
+# Match only identifiable devotional subjects; do not infer a match from generic words.
+SUBJECTS = {
+    "shiva": ("shiva", "shiv", "mahadev", "bholenath", "neelkanth", "shankar"),
+    "krishna": ("krishna", "kanha", "govind", "gopal", "madhav"),
+    "rama": ("rama", "ram", "raghav", "siyaram"),
+    "hanuman": ("hanuman", "bajrang", "maruti"),
+    "ganesha": ("ganesha", "ganesh", "ganpati", "vinayak"),
+    "durga": ("durga", "kali", "chandi", "mahishasurmardini"),
+    "vishnu": ("vishnu", "narayan", "narayana", "hari"),
+    "shani": ("shani", "shanidev", "shanishchar"),
+    "narasimha": ("narasimha", "narsimha", "narsingh"),
+    "lakshmi": ("lakshmi", "laxmi"),
+    "saraswati": ("saraswati", "sarasvati"),
+    "parashuram": ("parashuram", "parshuram"),
+    "vamana": ("vamana", "vaman"),
+    "kalki": ("kalki",),
+}
+
+def subjects(name):
+    tokens = set(re.findall(r"[a-z]+", name.lower()))
+    normalized = re.sub(r"[^a-z]", "", name.lower())
+    return {subject for subject, aliases in SUBJECTS.items()
+            if any(alias in tokens or (len(alias) >= 5 and alias in normalized) for alias in aliases)}
+
+def choose_pair(music, images):
+    candidates = [(audio, image) for audio in music for image in images
+                  if subjects(audio["name"]) & subjects(image["name"])]
+    if not candidates:
+        raise RuntimeError("No matching music/image subjects in filenames. "
+                           "Rename files with a common deity/subject name; no random pairing will be made.")
+    return random.choice(candidates)
+
 def main():
     token=get_token()
     music=[f for f in files(FOLDERS["music"],token) if f.get("mimeType","").startswith("audio/") or f["name"].lower().endswith(".mp3")]
     images=[f for f in files(FOLDERS["images"],token) if f.get("mimeType","").startswith("image/") or f["name"].lower().endswith((".png",".jpg",".jpeg"))]
     print(f"Available: {len(music)} audio files, {len(images)} images")
     if not music or not images:raise RuntimeError("Music and image folders must both contain usable files")
-    audio=random.choice(music); image=random.choice(images)
+    audio,image=choose_pair(music,images)
+    print('Matched subject(s):', ', '.join(sorted(subjects(audio['name']) & subjects(image['name']))))
     Path("reels-preview").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         paths=[]

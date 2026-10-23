@@ -81,10 +81,12 @@ def compatible(audio, image):
         return False
     return True
 
-def choose_pair(music, images):
+def choose_pair(music, images, used_pairs=None):
+    used_pairs = used_pairs or set()
     candidates = [(audio, image) for audio in music for image in images
                   if subjects(audio["name"]) & subjects(image["name"])
-                  and compatible(audio, image)]
+                  and compatible(audio, image)
+                  and (audio["id"], image["id"]) not in used_pairs]
     if not candidates:
         raise RuntimeError("No safe subject-and-mood music/image pairing found in filenames. "
                            "Add subject and scene/mood keywords to filenames; no random pairing will be made.")
@@ -96,7 +98,10 @@ def main():
     images=[f for f in files(FOLDERS["images"],token) if f.get("mimeType","").startswith("image/") or f["name"].lower().endswith((".png",".jpg",".jpeg"))]
     print(f"Available: {len(music)} audio files, {len(images)} images")
     if not music or not images:raise RuntimeError("Music and image folders must both contain usable files")
-    audio,image=choose_pair(music,images)
+    history_path = Path("growth-agents/reels-generated-history.json")
+    history = json.loads(history_path.read_text()) if history_path.exists() else {"pairs": []}
+    used_pairs = {(p["audio_id"], p["image_id"]) for p in history["pairs"]}
+    audio,image=choose_pair(music,images,used_pairs)
     print('Matched subject(s):', ', '.join(sorted(subjects(audio['name']) & subjects(image['name']))))
     print('Audio mood:', sorted(mood_tags(audio['name'])), 'Image mood:', sorted(mood_tags(image['name'])))
     Path("reels-preview").mkdir(exist_ok=True)
@@ -114,6 +119,8 @@ def main():
         cmd=["ffmpeg","-hide_banner","-loglevel","error","-y","-loop","1","-framerate","30","-i",str(paths[1]),"-stream_loop","-1","-i",str(paths[0]),"-t","30","-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","26","-c:a","aac","-b:a","128k","-pix_fmt","yuv420p","-movflags","+faststart",output]
         subprocess.run(cmd,check=True,timeout=540)
     Path("reels-preview/selection.json").write_text(json.dumps({"audio":audio["name"],"image":image["name"],"duration_seconds":30},indent=2))
-    print("Preview created successfully. No Instagram publishing occurred.")
+    history["pairs"].append({"audio_id":audio["id"],"image_id":image["id"],"audio_name":audio["name"],"image_name":image["name"]})
+    history_path.write_text(json.dumps(history,indent=2,ensure_ascii=False)+"\\n")
+    print("Preview created successfully; generated pair recorded to prevent repetition. No Instagram publishing occurred.")
 
 if __name__=="__main__":main()

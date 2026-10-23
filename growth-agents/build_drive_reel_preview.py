@@ -120,7 +120,7 @@ def main():
         subprocess.run(cmd,check=True,timeout=540)
     Path("reels-preview/selection.json").write_text(json.dumps({"audio":audio["name"],"image":image["name"],"duration_seconds":30},indent=2))
     history["pairs"].append({"audio_id":audio["id"],"image_id":image["id"],"audio_name":audio["name"],"image_name":image["name"]})
-    history_path.write_text(json.dumps(history,indent=2,ensure_ascii=False)+"\\n")
+    history_path.write_text(json.dumps(history,indent=2,ensure_ascii=False)+"\n")
     print("Preview created successfully; generated pair recorded to prevent repetition. No Instagram publishing occurred.")
 
 if __name__=="__main__":main()

@@ -1,0 +1,38 @@
+name: Geeta Press Daily 6 AM Devotion
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * *' # 06:00 IST daily
+permissions:
+  contents: write
+concurrency:
+  group: geeta-press-daily-devotion
+  cancel-in-progress: false
+jobs:
+  publish-geeta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Publish one Anks Dharam video link with Hindi devotional caption
+        env:
+          FACEBOOK_GEETA_PAGE_ID: ${{ secrets.FACEBOOK_GEETA_PAGE_ID }}
+          FACEBOOK_GEETA_PAGE_TOKEN: ${{ secrets.FACEBOOK_GEETA_PAGE_TOKEN }}
+        run: python growth-agents/geeta_daily_publish.py
+      - name: Save confirmed publication record
+        run: |
+          git config user.name "Anks Dharam Growth Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f growth-agents/geeta-daily-published.json ]; then
+            git add growth-agents/geeta-daily-published.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Record Geeta Press daily post [skip ci]"
+              git pull --rebase origin main
+              git push
+            fi
+          fi

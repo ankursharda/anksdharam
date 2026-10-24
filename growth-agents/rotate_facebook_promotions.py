@@ -51,6 +51,9 @@ def main():
     videos = sorted(catalog["videos"], key=lambda v: v.get("opportunity_score", 0), reverse=True)
     failures = []
     for label, page_id, token in pages:
+        if label == "Geeta Press Gorakhpur":
+            print("Geeta Press handled by dedicated 06:00 IST workflow; skipping here.")
+            continue
         is_shared_page = label == "Geeta Press Gorakhpur"
         # Limit shared-admin Page promotions to Wednesdays (UTC/IST same weekday at 09:45 IST).
         if is_shared_page and datetime.now(timezone.utc).weekday() != 2:

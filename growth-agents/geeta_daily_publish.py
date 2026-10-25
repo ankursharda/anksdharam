@@ -54,10 +54,16 @@ if not choices:
     raise SystemExit("No video outside 30-day rotation; no duplicate post made")
 choices.sort(key=lambda v: (v["video_id"] in previous, -float(v.get("opportunity_score") or 0)))
 video = choices[0]
+# Diwali 2026: feature the released Maha Lakshmi Mantra on 7 November,
+# safely after its announced 6 November release date.
+if today == "2026-11-07" and not any(p.get("video_id") == "ON2hITR2vzA" for p in posts):
+    video = {"video_id": "ON2hITR2vzA", "title": "Maha Lakshmi Mantra | Diwali Special"}
 vid = video["video_id"]
 title = " ".join(video.get("title", "").split())
 t = title.lower()
-if any(s in t for s in ("shani", "शन")):
+if "ON2hITR2vzA" == vid:
+    caption = "🪷 जय माँ महालक्ष्मी! दीपावली के पावन अवसर पर माँ लक्ष्मी के दिव्य मंत्र का श्रवण करें। माता रानी की कृपा से सभी के जीवन में सुख, शांति और समृद्धि बनी रहे। 🪔🙏"
+elif any(s in t for s in ("shani", "शन")):
     caption = "जय शनिदेव! प्रभु की कृपा से जीवन में न्याय, धैर्य और सद्बुद्धि बनी रहे। 🙏"
 elif any(s in t for s in ("shiv", "mahadev", "शिव", "महादेव")):
     caption = "हर हर महादेव! भगवान शिव की कृपा सभी भक्तों पर बनी रहे। 🔱🙏"

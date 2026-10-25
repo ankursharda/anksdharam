@@ -1,0 +1,29 @@
+name: One-Time Anks Dharam Viewer Reconnection
+on:
+  push:
+    branches: [main]
+    paths:
+      - "growth-agents/own_video_reconnect.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Retrieve own video comments for tailored replies
+        env:
+          YOUTUBE_OAUTH_CLIENT_ID: ${{ secrets.YOUTUBE_OAUTH_CLIENT_ID }}
+          YOUTUBE_OAUTH_CLIENT_SECRET: ${{ secrets.YOUTUBE_OAUTH_CLIENT_SECRET }}
+          YOUTUBE_OAUTH_REFRESH_TOKEN: ${{ secrets.YOUTUBE_OAUTH_REFRESH_TOKEN }}
+        run: python growth-agents/own_video_reconnect.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: own-video-comment-review
+          path: growth-agents/output/own-video-comments.json
+          retention-days: 14

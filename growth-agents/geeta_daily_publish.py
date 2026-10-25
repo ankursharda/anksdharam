@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 
 ROOT = Path("growth-agents")
 PAGE_ID = os.environ["FACEBOOK_GEETA_PAGE_ID"].strip()
@@ -22,8 +23,18 @@ def api(method, path, values):
     body = None if method == "GET" else urlencode(values).encode()
     if method == "GET":
         url += "?" + urlencode(values)
-    with urlopen(Request(url, data=body, method=method), timeout=35) as response:
-        return json.load(response)
+    try:
+        with urlopen(Request(url, data=body, method=method), timeout=35) as response:
+            return json.load(response)
+    except HTTPError as exc:
+        raw = exc.read().decode('utf-8', errors='replace')
+        try:
+            err = json.loads(raw).get('error', {})
+            print('Facebook API error: HTTP', exc.code, 'code', err.get('code'), 'subcode', err.get('error_subcode'), 'type', err.get('type'))
+            print('Facebook message:', err.get('message', 'Unavailable').replace(TOKEN, '[REDACTED]'))
+        except (ValueError, AttributeError):
+            print('Facebook API error: HTTP', exc.code, '(unparseable response)')
+        raise SystemExit('Facebook API request failed; publication not confirmed') from None
 page = api("GET", "/" + PAGE_ID, {"fields":"id,name"})
 if str(page.get("id")) != PAGE_ID or "Geeta Press" not in page.get("name", ""):
     raise SystemExit("Geeta Press Page identity mismatch")

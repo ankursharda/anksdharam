@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Daily 06:00 IST Geeta Press Gorakhpur devotional YouTube link post."""
-import json, os, re
+import json, os, re, subprocess
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlencode
@@ -10,7 +10,7 @@ from urllib.error import HTTPError
 ROOT = Path("growth-agents")
 PAGE_ID = os.environ["FACEBOOK_GEETA_PAGE_ID"].strip()
 TOKEN = os.environ["FACEBOOK_GEETA_PAGE_TOKEN"].strip()
-CATALOG = ROOT / "channel-catalog.json"
+PLAYLISTS = ("PLdp9v6qShEfS93Chcvyq9YAfR9qpLFYGs", "PLdp9v6qShEfRlIBnxkKVTtvn9jkUoOIQV")
 LEDGER = ROOT / "geeta-daily-published.json"
 IST = timezone(timedelta(hours=5, minutes=30))
 today = datetime.now(IST).date().isoformat()
@@ -44,10 +44,29 @@ posts = ledger.get("posts", [])
 if any(p.get("date") == today for p in posts):
     print("Already published for " + today)
     raise SystemExit(0)
-videos = json.loads(CATALOG.read_text(encoding="utf-8")).get("videos", [])
-eligible = [v for v in videos if v.get("privacy") == "public" and v.get("video_id")]
+videos = []
+for playlist_id in PLAYLISTS:
+    url = "https://www.youtube.com/playlist?list=" + playlist_id
+    command = ["yt-dlp", "--flat-playlist", "--dump-single-json", "--no-warnings", "--ignore-errors", url]
+    try:
+        output = subprocess.run(command, capture_output=True, text=True, timeout=150)
+        if output.returncode != 0:
+            print("Playlist retrieval failed:", playlist_id, output.stderr[-600:], flush=True)
+            continue
+        data = json.loads(output.stdout)
+        for item in data.get("entries", []):
+            if not item:
+                continue
+            vid_id = item.get("id")
+            title = item.get("title") or ""
+            if re.fullmatch(r"[A-Za-z0-9_-]{11}", vid_id or "") and title and item.get("live_status") not in ("is_upcoming", "is_live") and item.get("availability") not in ("private", "premium_only", "subscriber_only"):
+                videos.append({"video_id": vid_id, "title": title, "privacy": "public"})
+        print("Loaded playlist:", playlist_id, "entries:", len(data.get("entries", [])), flush=True)
+    except (subprocess.TimeoutExpired, ValueError, OSError) as exc:
+        print("Playlist retrieval error:", playlist_id, type(exc).__name__, flush=True)
+eligible = list({v["video_id"]: v for v in videos if v.get("privacy") == "public" and v.get("video_id")}.values())
 if not eligible:
-    raise SystemExit("No public videos in catalog")
+    raise SystemExit("No eligible videos retrieved from configured playlists; no Facebook post attempted")
 recent = {p["video_id"] for p in posts if (datetime.fromisoformat(today).date() - datetime.fromisoformat(p["date"]).date()).days < 30}
 previous = {p["video_id"] for p in posts}
 choices = [v for v in eligible if v["video_id"] not in recent]

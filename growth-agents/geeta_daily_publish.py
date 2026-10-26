@@ -35,6 +35,7 @@ def api(method, path, values):
         except (ValueError, AttributeError):
             print('Facebook API error: HTTP', exc.code, '(unparseable response)')
         raise SystemExit('Facebook API request failed; publication not confirmed') from None
+print("Checking Geeta Press Page identity and API access", flush=True)
 page = api("GET", "/" + PAGE_ID, {"fields":"id,name"})
 if str(page.get("id")) != PAGE_ID or "Geeta Press" not in page.get("name", ""):
     raise SystemExit("Geeta Press Page identity mismatch")
@@ -77,6 +78,7 @@ else:
     caption = "सनातन धर्म की दिव्य कथाओं और भक्ति का स्मरण करें। ईश्वर सभी का कल्याण करें। 🙏"
 link = "https://www.youtube.com/watch?v=" + vid
 message = caption + "\n\n" + title + "\n" + link + "\n\n#AnksDharam #सनातनधर्म #भक्ति"
+print("Attempting Facebook publication for video:", vid, flush=True)
 result = api("POST", "/" + PAGE_ID + "/feed", {"message":message, "link":link, "published":"true"})
 post_id = result.get("id")
 if not post_id:
@@ -84,4 +86,4 @@ if not post_id:
 posts.append({"date":today, "video_id":vid, "facebook_post_id":post_id})
 ledger["posts"] = posts
 LEDGER.write_text(json.dumps(ledger, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-print("Geeta Press published:", vid, "post ID:", post_id)
+print("Geeta Press published:", vid, "post ID:", post_id, flush=True)

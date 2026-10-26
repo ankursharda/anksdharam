@@ -10,7 +10,7 @@ from urllib.error import HTTPError
 ROOT = Path("growth-agents")
 PAGE_ID = os.environ["FACEBOOK_GEETA_PAGE_ID"].strip()
 TOKEN = os.environ["FACEBOOK_GEETA_PAGE_TOKEN"].strip()
-PLAYLISTS = ("PLdp9v6qShEfS93Chcvyq9YAfR9qpLFYGs", "PLdp9v6qShEfRlIBnxkKVTtvn9jkUoOIQV")
+PLAYLISTS = ("PLdp9v6qShEfS93Chcvyq9YAfR9qpLFYGs", "PLdp9v6qShEfRlIBnxkKVTtvn9jkUoOIQV", "PLdp9v6qShEfRzwEdeL9WqLYgxZub3ZIgC")
 LEDGER = ROOT / "geeta-daily-published.json"
 IST = timezone(timedelta(hours=5, minutes=30))
 today = datetime.now(IST).date().isoformat()

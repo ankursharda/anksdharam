@@ -1,0 +1,22 @@
+name: Growth Agent - Shani Dev Distribution Drafts
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate platform-specific promotional drafts
+        run: python3 growth-agents/distribution_drafts.py
+      - name: Upload drafts for human approval
+        uses: actions/upload-artifact@v4
+        with:
+          name: shani-distribution-drafts
+          path: |
+            growth-agents/output/shani-distribution-drafts.md
+            growth-agents/output/shani-distribution-drafts.json
+          retention-days: 90

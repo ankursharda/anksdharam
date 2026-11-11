@@ -5,6 +5,7 @@ on:
     - cron: '30 0 * * *' # 06:00 IST daily
 permissions:
   contents: write
+  issues: write
 concurrency:
   group: geeta-press-daily-devotion
   cancel-in-progress: false
@@ -37,4 +38,19 @@ jobs:
               git pull --rebase origin main
               git push
             fi
+          fi
+      - name: Alert on failed Geeta Press publication
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE="Geeta Press automation failure"
+          BODY="The Geeta Press daily posting workflow failed. Check the run: $RUN_URL"
+          ISSUE=$(gh issue list --state open --search "$TITLE in:title" --json number,title --jq '.[] | select(.title == "Geeta Press automation failure") | .number' | head -n 1)
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --assignee "ankursharda"
           fi

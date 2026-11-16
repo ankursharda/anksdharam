@@ -403,6 +403,17 @@ footer {
 @media(prefers-reduced-motion:reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* MEMBER-EXCLUSIVE FEATURE FILMS */
+.members-showcase{padding:34px 0 12px}
+.members-intro{color:var(--muted);max-width:850px;margin:-6px 0 20px}
+.members-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.member-film{background:linear-gradient(145deg,#172235,#101725);border:1px solid #b78b4c;border-radius:12px;padding:25px;display:flex;flex-direction:column;gap:12px}
+.member-film h3{font:normal clamp(23px,3vw,32px) Georgia,serif;color:var(--gold);margin:0}
+.member-film p{color:var(--muted);margin:0;flex:1}
+.member-tag{color:#ffe0a0;letter-spacing:2px;font-size:11px;font-weight:bold}
+.member-film .btn{align-self:flex-start}
+@media(max-width:750px){.members-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -426,6 +437,7 @@ footer {
   <div class="nav-links">
     <a href="#home">Home</a>
     <a href="#films">Films</a>
+    <a href="#members">Members-Only Films</a>
     <a href="#playlists">Playlists</a>
     <a href="#upcoming">Upcoming</a>
     <a href="#about">About</a>
@@ -494,6 +506,28 @@ footer {
 
   </div>
 
+</section>
+
+
+<!-- MEMBERS-ONLY FEATURE FILMS -->
+<section class="members-showcase" id="members">
+  <h2 class="section-title">Exclusive Feature Films for YouTube Members</h2>
+  <p class="members-intro">Discover member-exclusive cinematic releases from Anks Dharam. These films are available to eligible YouTube channel members; membership access is managed by YouTube.</p>
+  <div class="members-grid">
+    <article class="member-film">
+      <span class="member-tag">RELEASED • MEMBERS ONLY</span>
+      <h3>Kalki Avatar — Feature Film</h3>
+      <p>A futuristic sci-fi mythology cinematic experience exploring the final age, inspired by the Kalki Avatar tradition.</p>
+      <a class="btn gold-btn" href="https://www.youtube.com/@AnksDharam/join" target="_blank" rel="noopener noreferrer">Explore YouTube Membership ↗</a>
+    </article>
+    <article class="member-film">
+      <span class="member-tag">RELEASED • MEMBERS ONLY</span>
+      <h3>Shani Dev — Feature Film</h3>
+      <p>Experience Shani Dev’s cinematic story of karma, justice and destiny in an exclusive feature-film release for channel members.</p>
+      <a class="btn gold-btn" href="https://www.youtube.com/@AnksDharam/join" target="_blank" rel="noopener noreferrer">Explore YouTube Membership ↗</a>
+    </article>
+  </div>
+  <p class="members-intro" style="margin-top:14px;font-size:13px">Already a member? Visit the <a href="https://www.youtube.com/@AnksDharam" target="_blank" rel="noopener noreferrer">Anks Dharam YouTube channel</a> while signed in to find eligible members-only releases.</p>
 </section>
 
 <!-- THREE FEATURED FILMS -->
